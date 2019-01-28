@@ -18,10 +18,6 @@ namespace LCDM4000InterfaceWrapper
             log4net.Config.XmlConfigurator.Configure(new System.IO.FileInfo("log4net.xml"));
         }
 
-        /// <summary>
-        /// AppLogger를 가져온다.
-        /// </summary>
-        /// <returns>DeviceLogger</returns>
         private static ILog GetAppLogger()
         {
             RollingFileAppender roller = new RollingFileAppender();
@@ -38,27 +34,25 @@ namespace LCDM4000InterfaceWrapper
 
 
             DummyLogger dummyILogger = new DummyLogger("AppLog");
-            // 요걸 연결안해주면 log4net 안에서 Null참조 예외가 발생한다.
             dummyILogger.Hierarchy = (log4net.Repository.Hierarchy.Hierarchy)LogManager.GetRepository();
             dummyILogger.Level = log4net.Core.Level.Info;
             dummyILogger.AddAppender(roller);
 
-            return new NSLog(dummyILogger);
+            return new VarLog(dummyILogger);
         }
     }
 
     public sealed class DummyLogger : log4net.Repository.Hierarchy.Logger
     {
-        // Methods
         internal DummyLogger(string name)
             : base(name)
         {
         }
     }
 
-    public class NSLog : log4net.Core.LogImpl
+    public class VarLog : log4net.Core.LogImpl
     {
-        public NSLog(DummyLogger log) : base(log)
+        public VarLog(DummyLogger log) : base(log)
         {
         }
 

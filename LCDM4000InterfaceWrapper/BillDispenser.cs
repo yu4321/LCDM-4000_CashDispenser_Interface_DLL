@@ -9,7 +9,27 @@ using log4net;
 
 namespace LCDM4000InterfaceWrapper
 {
-    public enum ERR_CODE_DISPENSER { None, None_Error=32, Bill_Pick_Up_Error = 0x21, Jam_Between_CHK_and_DVT, Jam_Between_DVT_and_EJT, Jam_Between_EJT_and_EXIT, Note_Staying_in_EXIT, Ejecting_Note_Suspected_As_Rejected, Note_Count_Mismatch, Note_Should_be_Rejected_Passed_EJT, Dispensing_Too_Many_Notes_In_One = 0x2C, Rejecting_Too_Many_Notes_In_One, Abnormal_Termination_During_PURGE, Detecting_No_Cassette_Requested_To_Dispense_Bills = 0x44, Detecting_NEAREND_Status_In_Requested_Cassette, Note_From_Cassette1_Without_Request = 64 + 0x20, Note_From_Cassette2_Without_Request, Note_From_Cassette3_Without_Request, Note_From_Cassette4_Without_Request };
+    public enum ERR_CODE_DISPENSER {
+        None,
+        None_Error =32,
+        Bill_Pick_Up_Error = 0x21,
+        Jam_on_the_path_between_CHK_Sensor_and_DVT_Sensor,
+        Jam_on_the_path_between_DVT_Sensor_and_EJT_Sensor,
+        Jam_on_the_path_between_EJT_Sensor_and_EXIT_Sensor,
+        A_note_Staying_in_EXIT_Sensor,
+        Ejecting_the_note_suspected_as_rejected,
+        Note_count_mismatch_on_eject_sensor_due_to_unexpected_reason,
+        The_note_which_should_be_rejected_is_passed_on_eject_sensor,
+        Dispensing_too_many_notes_for_one_transaction = 0x2C,
+        Rejecting_too_many_notes_for_one_transaction,
+        Abnormal_termination_during_purge_operation,
+        Detecting_no_cassette_requested_to_dispense_bills_ = 0x44,
+        Detecting_NEAREND_status_in_the_cassette_requested_to_dispense,
+        During_dispensing_from_the_2nd_or_3rd_or_Bottom_Cassette_the_banknote_coming_from_the_Top_Cassette_is_detected = 64 + 0x20,
+        During_dispensing_from_the_1st_or_3rd_or_Bottom_Cassette_the_banknote_coming_from_the_2nd_Cassette_is_detected,
+        During_dispensing_from_the_1st_or_2nd_or_Bottom_Cassette_the_banknote_coming_from_the_3rd_Cassette_is_detected,
+        During_dispensing_from_the_1st_or_2nd_or_3rd_Cassette_the_banknote_coming_from_the_4th_Cassette_is_detected
+    };
 
     public struct StatusResponse
     {
