@@ -24,7 +24,7 @@ namespace LCDM4000InterfaceWrapper
             roller.AppendToFile = true;
             roller.RollingStyle = RollingFileAppender.RollingMode.Size;
             roller.MaxSizeRollBackups = 10;
-            roller.MaximumFileSize = "3MB";
+            roller.MaximumFileSize = "1MB";
             roller.File = $@"logs\{System.Reflection.Assembly.GetEntryAssembly().GetName().Name+"_BillDispenser"}.log";
 
             roller.StaticLogFileName = true;
