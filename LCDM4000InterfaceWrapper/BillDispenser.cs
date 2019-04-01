@@ -60,6 +60,10 @@ namespace LCDM4000InterfaceWrapper
         public int cassette2Dispensed;
         public int cassette3Dispensed;
         public int cassette4Dispensed;
+        public int cassette1Rejected;
+        public int cassette2Rejected;
+        public int cassette3Rejected;
+        public int cassette4Rejected;
         public StatusResponse status;
     }
     /// <summary>
@@ -137,8 +141,9 @@ namespace LCDM4000InterfaceWrapper
                 Logger.Info("BillDispenser - Setted Port " + _port);
                 return true;
             }
-            catch
+            catch (Exception e)
             {
+                Logger.Error(e);
                 return false;
             }
         }
@@ -174,8 +179,9 @@ namespace LCDM4000InterfaceWrapper
                 Logger.Info("BillAccepter - Open Port");
                 return true;
             }
-            catch
+            catch (Exception e)
             {
+                Logger.Error(e);
                 return false;
             }
         }
@@ -192,8 +198,9 @@ namespace LCDM4000InterfaceWrapper
                 Logger.Info("BillDispenser - 포트 닫음 ");
                 return true;
             }
-            catch
+            catch (Exception e)
             {
+                Logger.Error(e);
                 return false;
             }
         }
@@ -279,14 +286,15 @@ namespace LCDM4000InterfaceWrapper
                             break;
                         }
                     }
-                    catch
+                    catch (Exception e)
                     {
+                        Logger.Error(e);
                         break;
                     }
                 }
                 buffer.RemoveRange(0, SOH);
-
             }
+
             result.mainError = (ERR_CODE_DISPENSER)MSG[4];
             result.isCassette1NearEnd = (MSG[6] & 8) != 0 ? true : false;
             if (MSG[7] == 0x31) result.isCassette1Exists = true;
@@ -297,6 +305,11 @@ namespace LCDM4000InterfaceWrapper
             result.isCassette4NearEnd = (MSG[18] & 8) != 0 ? true : false;
             if (MSG[19] == 0x34) result.isCassette4Exists = true;
             result.success = true;
+            if (MSG.Count <= 0)
+            {
+                result.success = false;
+                Logger.Warn("No Response from Dispenser");
+            }
             BytesLog(MSG);
             internalSerialPort.Read(buf, 0, 1);
             ByteLog(buf[0]);
@@ -399,8 +412,9 @@ namespace LCDM4000InterfaceWrapper
                             break;
                         }
                     }
-                    catch
+                    catch (Exception e)
                     {
+                        Logger.Error(e);
                         break;
                     }
                     buffer.RemoveRange(0, SOH);
@@ -418,12 +432,22 @@ namespace LCDM4000InterfaceWrapper
                 result.cassette2Dispensed = MSG[9] - 0x20;
                 result.cassette3Dispensed = MSG[12] - 0x20;
                 result.cassette4Dispensed = MSG[15] - 0x20;
+                result.cassette1Rejected = MSG[7] - 0x20;
+                result.cassette2Rejected = MSG[10] - 0x20;
+                result.cassette3Rejected = MSG[13] - 0x20;
+                result.cassette4Rejected = MSG[16] - 0x20;
                 result.status.success = true;
+                if (MSG.Count <= 0)
+                {
+                    result.status.success = false;
+                    Logger.Warn("No Response from Dispenser");
+                }
                 BytesLog(MSG);
                 DispensedLog(result.cassette1Dispensed, result.cassette2Dispensed, result.cassette3Dispensed, result.cassette4Dispensed);
             }
-            catch
+            catch(Exception e)
             {
+                Logger.Error(e);
                 result.status.success = false;
             }
             internalSerialPort.Read(buf, 0, 1);
@@ -489,8 +513,9 @@ namespace LCDM4000InterfaceWrapper
                             break;
                         }
                     }
-                    catch
+                    catch (Exception e)
                     {
+                        Logger.Error(e);
                         break;
                     }
                 }
@@ -509,6 +534,11 @@ namespace LCDM4000InterfaceWrapper
             result.cassette4Dispensed = MSG[15] - 0x20;
             DispensedLog(result.cassette1Dispensed, result.cassette2Dispensed, result.cassette3Dispensed, result.cassette4Dispensed, true);
             result.status.success = true;
+            if (MSG.Count <= 0)
+            {
+                result.status.success = false;
+                Logger.Warn("No Response from Dispenser");
+            }
             internalSerialPort.Read(buf, 0, 1);
             ByteLog(buf[0]);
             while (internalSerialPort.BytesToRead > 0) internalSerialPort.ReadExisting();
