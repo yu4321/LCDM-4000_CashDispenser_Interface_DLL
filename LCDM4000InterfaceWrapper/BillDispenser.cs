@@ -143,7 +143,7 @@ namespace LCDM4000InterfaceWrapper
             }
             catch (Exception e)
             {
-                Logger.Error(e);
+                Logger.Error("SETPORT: "+e);
                 return false;
             }
         }
@@ -181,7 +181,7 @@ namespace LCDM4000InterfaceWrapper
             }
             catch (Exception e)
             {
-                Logger.Error(e);
+                Logger.Error("OPENPORT: " + e);
                 return false;
             }
         }
@@ -200,7 +200,7 @@ namespace LCDM4000InterfaceWrapper
             }
             catch (Exception e)
             {
-                Logger.Error(e);
+                Logger.Error("CLOSEPORT: " + e);
                 return false;
             }
         }
@@ -288,7 +288,7 @@ namespace LCDM4000InterfaceWrapper
                     }
                     catch (Exception e)
                     {
-                        Logger.Error(e);
+                        Logger.Error("CHECKSTATUS - CANNOT PARSE MESSAGE: " + e);
                         break;
                     }
                 }
@@ -414,7 +414,7 @@ namespace LCDM4000InterfaceWrapper
                     }
                     catch (Exception e)
                     {
-                        Logger.Error(e);
+                        Logger.Error("DISPENSE - CANNOT PARSE MESSAGE: " + e);
                         break;
                     }
                     buffer.RemoveRange(0, SOH);
@@ -443,11 +443,11 @@ namespace LCDM4000InterfaceWrapper
                     Logger.Warn("No Response from Dispenser");
                 }
                 BytesLog(MSG);
-                DispensedLog(result.cassette1Dispensed, result.cassette2Dispensed, result.cassette3Dispensed, result.cassette4Dispensed);
+                DispensedLog(result.cassette1Dispensed, result.cassette2Dispensed, result.cassette3Dispensed, result.cassette4Dispensed, result.cassette1Rejected, result.cassette2Rejected, result.cassette3Rejected, result.cassette4Rejected);
             }
             catch(Exception e)
             {
-                Logger.Error(e);
+                Logger.Error("DISPENSE - CANNOT PROCESS MESSAGE: "+e);
                 result.status.success = false;
             }
             internalSerialPort.Read(buf, 0, 1);
@@ -515,7 +515,7 @@ namespace LCDM4000InterfaceWrapper
                     }
                     catch (Exception e)
                     {
-                        Logger.Error(e);
+                        Logger.Error("GETLASTSTATUS - CANNOT PARSE MESSAGE: " + e);
                         break;
                     }
                 }
@@ -532,7 +532,11 @@ namespace LCDM4000InterfaceWrapper
             result.cassette2Dispensed = MSG[9] - 0x20;
             result.cassette3Dispensed = MSG[12] - 0x20;
             result.cassette4Dispensed = MSG[15] - 0x20;
-            DispensedLog(result.cassette1Dispensed, result.cassette2Dispensed, result.cassette3Dispensed, result.cassette4Dispensed, true);
+            result.cassette1Rejected = MSG[7] - 0x20;
+            result.cassette2Rejected = MSG[10] - 0x20;
+            result.cassette3Rejected = MSG[13] - 0x20;
+            result.cassette4Rejected = MSG[16] - 0x20;
+            DispensedLog(result.cassette1Dispensed, result.cassette2Dispensed, result.cassette3Dispensed, result.cassette4Dispensed, result.cassette1Rejected, result.cassette2Rejected, result.cassette3Rejected, result.cassette4Rejected, true);
             result.status.success = true;
             if (MSG.Count <= 0)
             {
@@ -610,12 +614,18 @@ namespace LCDM4000InterfaceWrapper
             Logger.Info(log);
         }
 
-        private void DispensedLog(int C1,int C2,int C3,int C4,bool isLast=false)
+        private void DispensedLog(int C1,int C2,int C3,int C4, int R1, int R2, int R3, int R4,bool isLast=false)
         {
             string log = "BillDispenser -- Dispensed: ";
             log += string.Format("Cassette 1: {0}, Cassette 2: {1}, Cassette 3: {2}, Cassette 4: {3}", C1, C2, C3, C4);
             if (isLast) log += " (LAST STATUS)";
             Logger.Info(log);
+            if (R1 + R2 + R3 + R4 > 0)
+            {
+                string log2 = "BillDispenser -- Rejected: ";
+                log2 += string.Format("Cassette 1: {0}, Cassette 2: {1}, Cassette 3: {2}, Cassette 4: {3}", R1, R2, R3, R4);
+                Logger.Info(log2);
+            }
         }
 
         private void RequestLog(int C1, int C2, int C3, int C4)
