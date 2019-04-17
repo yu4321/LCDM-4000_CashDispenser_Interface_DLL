@@ -1,81 +1,98 @@
-﻿using log4net;
-using log4net.Appender;
-using log4net.Layout;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System;
+using System.IO;
 
 namespace LCDM4000InterfaceWrapper
 {
     public static class Logger
     {
-        public static readonly ILog LogWriter = GetAppLogger();
-
+        private static string filePath = null;
+        public static DateTime lastLogTime;
         static Logger()
         {
-            log4net.Config.XmlConfigurator.Configure(new System.IO.FileInfo("log4net.xml"));
+            filePath = ResetFileNamebyDate();
+            if (!Directory.Exists("logs"))
+            {
+                Directory.CreateDirectory("logs");
+            }
+        }
+        internal static void Info(string v)
+        {
+            try
+            {
+                if (lastLogTime.Date != DateTime.Now.Date)
+                {
+                    filePath = ResetFileNamebyDate();
+                }
+                lastLogTime = DateTime.Now;
+                using (StreamWriter fs = new StreamWriter(filePath, true))
+                {
+                    fs.WriteLine($"{lastLogTime} INFO : {v}");
+                }
+            }
+            catch
+            {
+
+            }
         }
 
-        private static ILog GetAppLogger()
+        internal static void Error(string v)
         {
-            RollingFileAppender roller = new RollingFileAppender();
-            roller.AppendToFile = true;
-            roller.RollingStyle = RollingFileAppender.RollingMode.Size;
-            roller.MaxSizeRollBackups = 10;
-            roller.MaximumFileSize = "1MB";
-            roller.File = $@"logs\{System.Reflection.Assembly.GetEntryAssembly().GetName().Name+"_BillDispenser"}.log";
+            try
+            {
+                if (lastLogTime.Date != DateTime.Now.Date)
+                {
+                    filePath = ResetFileNamebyDate();
+                }
+                lastLogTime = DateTime.Now;
+                using (StreamWriter fs = new StreamWriter(filePath, true))
+                {
+                    fs.WriteLine($"{lastLogTime} Error : {v}");
+                }
+            }
+            catch
+            {
 
-            roller.StaticLogFileName = true;
-            roller.Layout = new PatternLayout("%d{yyMMdd HH:mm:ss.fff} %-5p : %m%n");
-            roller.LockingModel = new FileAppender.MinimalLock();
-            roller.ActivateOptions();
-
-
-            DummyLogger dummyILogger = new DummyLogger("AppLog");
-            dummyILogger.Hierarchy = (log4net.Repository.Hierarchy.Hierarchy)LogManager.GetRepository();
-            dummyILogger.Level = log4net.Core.Level.Info;
-            dummyILogger.AddAppender(roller);
-
-            return new VarLog(dummyILogger);
-        }
-    }
-
-    public sealed class DummyLogger : log4net.Repository.Hierarchy.Logger
-    {
-        internal DummyLogger(string name)
-            : base(name)
-        {
-        }
-    }
-
-    public class VarLog : log4net.Core.LogImpl
-    {
-        public VarLog(DummyLogger log) : base(log)
-        {
+            }
         }
 
+        internal static void Warn(string v)
+        {
+            try
+            {
+                if (lastLogTime.Date != DateTime.Now.Date)
+                {
+                    filePath = ResetFileNamebyDate();
+                }
+                lastLogTime = DateTime.Now;
+                using (StreamWriter fs = new StreamWriter(filePath, true))
+                {
+                    fs.WriteLine($"{lastLogTime} Warn : {v}");
+                }
+            }
+            catch
+            {
 
-        public override void Info(object message)
-        {
-            base.Info(message);
+            }
         }
-        public override void Error(object message)
+
+        public static string ResetFileNamebyDate()
         {
-            base.Error(message);
+            return $"logs/log{DateTime.Now.ToShortDateString()}_{System.Reflection.Assembly.GetEntryAssembly().GetName().Name}_BillDispenser.log";
         }
-        public override void Warn(object message)
+
+        internal static void Info(object obj)
         {
-            base.Warn(message);
+            Info(obj.ToString());
         }
-        public override void Error(object message, Exception exception)
+
+        internal static void Error(object obj)
         {
-            base.Error(message, exception);
+            Error(obj.ToString());
         }
-        public override void Warn(object message, Exception exception)
+
+        internal static void Warn(object obj)
         {
-            base.Warn(message, exception);
+            Warn(obj.ToString());
         }
     }
 }

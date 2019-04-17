@@ -5,7 +5,6 @@ using System.Reflection;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using log4net;
 
 namespace LCDM4000InterfaceWrapper
 {
@@ -73,8 +72,6 @@ namespace LCDM4000InterfaceWrapper
     /// </summary>
     public class BillDispenser
     {
-        public static readonly ILog Logger = LCDM4000InterfaceWrapper.Logger.LogWriter;
-
         public Dictionary<byte, string> CommandNames = new Dictionary<byte, string>();
         private SerialPort internalSerialPort = new SerialPort();
 
