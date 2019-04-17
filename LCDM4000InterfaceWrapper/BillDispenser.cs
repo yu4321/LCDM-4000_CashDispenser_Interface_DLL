@@ -311,7 +311,10 @@ namespace LCDM4000InterfaceWrapper
             internalSerialPort.Read(buf, 0, 1);
             ByteLog(buf[0]);
 
-            while (internalSerialPort.BytesToRead > 0) internalSerialPort.ReadExisting();
+            while (internalSerialPort.BytesToRead > 0)
+            {
+                internalSerialPort.ReadExisting();
+            }
 
             return result;
         }
@@ -344,7 +347,10 @@ namespace LCDM4000InterfaceWrapper
             WriteByte(ACK);
             internalSerialPort.Read(buf, 0, 1);
             ByteLog(buf[0]);
-            while (internalSerialPort.BytesToRead > 0) internalSerialPort.ReadExisting();
+            while (internalSerialPort.BytesToRead > 0)
+            {
+                internalSerialPort.ReadExisting();
+            }
 
         }
 
@@ -449,7 +455,10 @@ namespace LCDM4000InterfaceWrapper
             }
             internalSerialPort.Read(buf, 0, 1);
             ByteLog(buf[0]);
-            while (internalSerialPort.BytesToRead > 0) internalSerialPort.ReadExisting();
+            while (internalSerialPort.BytesToRead > 0)
+            {
+                internalSerialPort.ReadExisting();
+            }
             return result;
         }
 

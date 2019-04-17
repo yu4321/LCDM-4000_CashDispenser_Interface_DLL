@@ -15,7 +15,7 @@ namespace LCDM4000InterfaceWrapper
                 Directory.CreateDirectory("logs");
             }
         }
-        internal static void Info(string v)
+        internal static void Info(string param)
         {
             try
             {
@@ -24,9 +24,9 @@ namespace LCDM4000InterfaceWrapper
                     filePath = ResetFileNamebyDate();
                 }
                 lastLogTime = DateTime.Now;
-                using (StreamWriter fs = new StreamWriter(filePath, true))
+                using (StreamWriter sw = new StreamWriter(filePath, true))
                 {
-                    fs.WriteLine($"{lastLogTime} INFO : {v}");
+                    sw.WriteLine($"{lastLogTime} INFO : {param}");
                 }
             }
             catch
@@ -35,7 +35,7 @@ namespace LCDM4000InterfaceWrapper
             }
         }
 
-        internal static void Error(string v)
+        internal static void Error(string param)
         {
             try
             {
@@ -44,9 +44,9 @@ namespace LCDM4000InterfaceWrapper
                     filePath = ResetFileNamebyDate();
                 }
                 lastLogTime = DateTime.Now;
-                using (StreamWriter fs = new StreamWriter(filePath, true))
+                using (StreamWriter sw = new StreamWriter(filePath, true))
                 {
-                    fs.WriteLine($"{lastLogTime} Error : {v}");
+                    sw.WriteLine($"{lastLogTime} ERROR : {param}");
                 }
             }
             catch
@@ -55,7 +55,7 @@ namespace LCDM4000InterfaceWrapper
             }
         }
 
-        internal static void Warn(string v)
+        internal static void Warn(string param)
         {
             try
             {
@@ -64,9 +64,9 @@ namespace LCDM4000InterfaceWrapper
                     filePath = ResetFileNamebyDate();
                 }
                 lastLogTime = DateTime.Now;
-                using (StreamWriter fs = new StreamWriter(filePath, true))
+                using (StreamWriter sw = new StreamWriter(filePath, true))
                 {
-                    fs.WriteLine($"{lastLogTime} Warn : {v}");
+                    sw.WriteLine($"{lastLogTime} WARN : {param}");
                 }
             }
             catch
@@ -77,7 +77,14 @@ namespace LCDM4000InterfaceWrapper
 
         public static string ResetFileNamebyDate()
         {
-            return $"logs/log{DateTime.Now.ToShortDateString()}_{System.Reflection.Assembly.GetEntryAssembly().GetName().Name}_BillDispenser.log";
+            try
+            {
+                return $"logs/log{DateTime.Now.ToShortDateString()}_{System.Reflection.Assembly.GetEntryAssembly().GetName().Name}_BillDispenser.log";
+            }
+            catch
+            {
+                return $"logs/logUndefinableDateTime_{System.Reflection.Assembly.GetEntryAssembly().GetName().Name}_BillDispenser.log";
+            }
         }
 
         internal static void Info(object obj)
